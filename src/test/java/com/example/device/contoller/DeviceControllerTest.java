@@ -118,5 +118,12 @@ public class DeviceControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
+    
+    @Test
+    public void testSearchDevicesByBrand_MissingBrandParam() throws Exception {
+        mockMvc.perform(get("/api/devices/search"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string("The 'brand' request parameter is required."));
+    }
 }
 

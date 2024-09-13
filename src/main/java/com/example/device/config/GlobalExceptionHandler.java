@@ -2,8 +2,10 @@ package com.example.device.config;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.device.exception.DeviceNotFoundException;
@@ -30,6 +32,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     private ResponseEntity<String> mediaTypeNotAcceptable(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+    
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<String> handleException(MissingServletRequestParameterException e) {
+    	String parameterName = e.getParameterName();
+        String errorMessage = String.format("The '%s' request parameter is required.", parameterName);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        String errorMessage = "Request body is missing or malformed";
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
     
     @ExceptionHandler(Exception.class)
